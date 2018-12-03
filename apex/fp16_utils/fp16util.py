@@ -81,7 +81,7 @@ def prep_param_lists(model, flat_master=False):
         master_params.requires_grad = True
         # master_params.register_hook(backwards_debug_hook)
         if master_params.grad is None:
-            master_params.grad = master_params.new(*master_params.size())
+            master_params.grad = master_params.new_empty(master_params.size())
         return model_params, [master_params]
     else:
         master_params = [param.clone().float().detach() for param in model_params]
@@ -106,7 +106,7 @@ def model_grads_to_master_grads(model_params, master_params, flat_master=False):
         for model, master in zip(model_params, master_params):
             if model.grad is not None:
                 if master.grad is None:
-                    master.grad = Variable(master.data.new(*master.data.size()))
+                    master.grad = Variable(master.data.new_empty(master.data.size()))
                 master.grad.data.copy_(model.grad.data)
             else:
                 master.grad = None
